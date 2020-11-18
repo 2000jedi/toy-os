@@ -1,14 +1,18 @@
 # Default make target .
 
-C_SOURCES = $(wildcard kernel/*.c)
+SOURCES = $(wildcard drivers/*.c) $(wildcard kernel/*/*.c) $(wildcard kernel/*.c)
 HEADERS = $(wildcard kernel/*.h)
 
-OBJ = ${C_SOURCES:.c=.o}
+# mac-specific elf-friendly linker-ld
+LD = /usr/local/i386elfgcc/bin/i386-elf-ld
+BOCHS = /Users/yudi/opt/bochs/bin/bochs
+
+OBJ = ${SOURCES:.c=.o kernel/cpu/interrupt.o}
 
 run: all
-	bochs && make
+	qemu-system-i386 -fda toy-os.bin
 
-all: image
+all: clean image
 
 reset: clean run
 
@@ -16,15 +20,15 @@ image: boot/boot.bin kernel.bin
 	cat $^ > toy-os.bin
 
 clean:
-	rm -f *.bin *.o toy-os.img kernel/*.o boot/*.bin
+	rm -f *.bin *.o toy-os.img kernel/*/*.o kernel/*.o boot/*.bin drivers/*.o
 
 # Link
-kernel.bin: boot/kernel_entry.o ${OBJ} drivers/screen.o
-	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
+kernel.bin: boot/kernel_entry.o ${OBJ}
+	${LD} -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
 # Compile .c sources into object files
 %.o: %.c
-	gcc -m32 -ffreestanding -c $< -o $@
+	clang -g --target=i386-none-elf -ffreestanding -c $< -o $@
 
 # Compile .asm sources into object files
 %.o: %.asm

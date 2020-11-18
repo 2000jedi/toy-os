@@ -1,3 +1,5 @@
 *.bin
 *.o
 toy-os.img
+.vscode
+.vscode/*

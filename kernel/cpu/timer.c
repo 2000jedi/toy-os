@@ -7,14 +7,10 @@
 
 u32 tick = 0;
 
-static void timer_callback(registers_t regs) {
+static void timer_callback(registers_t *r) {
     tick++;
     puts("Tick: ", 7);
-    
-    char tick_ascii[256];
-    itoa(tick, tick_ascii);
-    puts(tick_ascii, 256);
-    putc('\n');
+    putint(tick);
 }
 
 void init_timer(u32 freq) {

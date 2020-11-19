@@ -9,6 +9,8 @@ isr_t interrupt_handlers[256];
 /* Can't do this with a loop because we need the address
  * of the function names */
 void isr_install() {
+    memset((char *) interrupt_handlers, 0, sizeof(interrupt_handlers));
+
     set_idt_gate(0, (u32)isr0);
     set_idt_gate(1, (u32)isr1);
     set_idt_gate(2, (u32)isr2);
@@ -116,11 +118,8 @@ char *exception_messages[] = {
 };
 
 void isr_handler(registers_t r) {
-    puts("received interrupt: ", 21);
-    char s[3];
-    itoa(r.int_no, s);
-    puts(s, 3);
-    putc('\n');
+    puts("\nReceived interrupt: ", 21);
+    putint(r.int_no);
     puts(exception_messages[r.int_no], 32);
     putc('\n');
 }
@@ -138,6 +137,6 @@ void irq_handler(registers_t r) {
     /* Handle the interrupt in a more modular way */
     if (interrupt_handlers[r.int_no] != 0) {
         isr_t handler = interrupt_handlers[r.int_no];
-        handler(r);
+        handler(&r);
     }
 }

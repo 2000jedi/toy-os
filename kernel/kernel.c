@@ -4,6 +4,7 @@
 #include "cpu/isr.h"
 #include "cpu/timer.h"
 #include "../drivers/screen.h"
+#include "../drivers/keyboard.h"
 
 void main() {
   vmem_flush();
@@ -14,10 +15,8 @@ void main() {
 
   asm volatile("sti");
 
-  init_timer(50);
-  /* Comment out the timer IRQ handler to read
-    * the keyboard IRQs easier */
-  //init_keyboard();
+  // init_timer(50);
+  init_keyboard();
 
   puts("Hello, World!\n", 14);
   char iv[3];

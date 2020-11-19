@@ -28,7 +28,7 @@ kernel.bin: boot/kernel_entry.o ${OBJ}
 
 # Compile .c sources into object files
 %.o: %.c
-	clang -g --target=i386-none-elf -ffreestanding -fno-PIE -c $< -o $@
+	clang -g --target=i386-none-elf -ffreestanding -c $< -o $@
 
 # Compile .asm sources into object files
 %.o: %.asm

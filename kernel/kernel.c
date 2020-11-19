@@ -2,6 +2,7 @@
 #include "io/stdio.h"
 #include "io/memory.h"
 #include "cpu/isr.h"
+#include "cpu/timer.h"
 #include "../drivers/screen.h"
 
 void main() {
@@ -10,6 +11,13 @@ void main() {
   puts("Interrupt inject ... ", 22);
   isr_install();
   puts("OK\n", 4);
+
+  asm volatile("sti");
+
+  init_timer(50);
+  /* Comment out the timer IRQ handler to read
+    * the keyboard IRQs easier */
+  //init_keyboard();
 
   puts("Hello, World!\n", 14);
   char iv[3];

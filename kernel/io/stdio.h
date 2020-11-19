@@ -3,5 +3,6 @@
 
 void putc(char c);
 void puts(char* str, int n);
+void putint(int n);
 
 #endif

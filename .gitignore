@@ -3,3 +3,4 @@
 toy-os.img
 .vscode
 .vscode/*
+*.elf

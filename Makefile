@@ -1,7 +1,7 @@
 # Default make target .
 
-SOURCES = $(wildcard drivers/*.c) $(wildcard kernel/*/*.c) $(wildcard kernel/*.c)
-HEADERS = $(wildcard kernel/*.h)
+SOURCES = $(wildcard drivers/*.c kernel/*/*.c kernel/*.c)
+HEADERS = $(wildcard drivers/*.h kernel/*/*.h kernel/*.h)
 
 # mac-specific elf-friendly linker-ld
 LD = /usr/local/i386elfgcc/bin/i386-elf-ld
@@ -28,7 +28,7 @@ kernel.bin: boot/kernel_entry.o ${OBJ}
 
 # Compile .c sources into object files
 %.o: %.c
-	clang -g --target=i386-none-elf -ffreestanding -c $< -o $@
+	clang -g --target=i386-none-elf -ffreestanding -fno-PIE -c $< -o $@
 
 # Compile .asm sources into object files
 %.o: %.asm
@@ -36,3 +36,10 @@ kernel.bin: boot/kernel_entry.o ${OBJ}
 
 %.bin: %.asm
 	nasm $< -f bin -o $@
+
+kernel.elf: boot/kernel_entry.o ${OBJ}
+	${LD} -o $@ -Ttext 0x1000 $^
+
+debug: toy-os.bin kernel.elf
+	qemu-system-i386 -s -S -fda toy-os.bin &
+	gdb -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
